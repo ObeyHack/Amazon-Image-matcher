@@ -2,3 +2,4 @@
 /.idea
 Datasets/*.csv
 *.pyc
+/__pycache__
