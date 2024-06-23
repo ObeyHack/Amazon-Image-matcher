@@ -34,7 +34,7 @@ def get_image_embeddings(object_image: Image):
       return embeddings of the given image
     """
 
-    image_array = np.expand_dims(image.img_to_array(object_image), axis=0)
+    image_array = np.expand_dims(object_image, axis=0)
     image_embedding = vgg16.predict(image_array)
 
     return image_embedding
@@ -81,10 +81,10 @@ def main(image1, image2):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # define the path of the images
-    sunflower = 'C:\\Users\\merzi\\PycharmProjects\\pythonProject\\Amazon-Image-matcher\\sunflower1.jpg'
-    helianthus = 'C:\\Users\\merzi\\PycharmProjects\\pythonProject\\Amazon-Image-matcher\\sunflower2.jpg'
+    sunflower = 'sunflower\\sunflower1.jpg'
+    helianthus = 'sunflower\\sunflower2.jpg'
     # use the show_image function to plot the images
-    show_image(sunflower), show_image(helianthus)
+    #show_image(sunflower), show_image(helianthus)
     # compare the two images
     main(sunflower, helianthus)
 
