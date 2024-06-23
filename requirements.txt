@@ -2,3 +2,10 @@ jupyter
 zipfile
 pandas
 numpy
+pillow
+tensorflow
+matplotlib
+keras
+Keras-Preprocessing
+Keras-Applications
+scikit-learn
