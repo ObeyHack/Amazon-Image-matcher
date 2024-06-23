@@ -7,4 +7,3 @@ RUN apt-get update && \
     pip install --upgrade pip
 
 # Install Basic Packages
-RUN pip install -r requirements.txt
