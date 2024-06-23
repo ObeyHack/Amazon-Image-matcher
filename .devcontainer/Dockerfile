@@ -1,10 +1,9 @@
-FROM python:3.12.1-slim-bullseye
+FROM quay.io/jupyter/${templateOption:baseVariant}:${templateOption:imageVariant}
+
 USER root
+# Generally, Dev Container Features assume that the non-root user (in this case jovyan)
+# is in a group with the same name (in this case jovyan). So we must first make that so.
+RUN groupadd jovyan \
+    && usermod -g jovyan -a -G users jovyan
 
-RUN apt-get update && \
-    apt-get -y install --reinstall ca-certificates && \
-    apt-get -y install software-properties-common && \
-    pip install --upgrade pip
-
-# Install Basic Packages
-RUN pip install ipykernel jupyter
+USER jovyan
