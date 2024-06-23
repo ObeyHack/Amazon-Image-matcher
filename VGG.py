@@ -8,6 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 vgg16 = VGG16(weights='imagenet', include_top=False,
               pooling='max', input_shape=(224, 224, 3))
 
+
 def load_image(image_path):
     """
         -----------------------------------------------------
@@ -32,7 +33,6 @@ def get_image_embeddings(object_image: Image):
 
     image_array = np.expand_dims(object_image, axis=0)
     image_embedding = vgg16.predict(image_array)
-
     return image_embedding
 
 
@@ -48,34 +48,6 @@ def get_similarity_score(first_image: str, second_image: str):
     second_image_vector = get_image_embeddings(second_image)
     similarity_score = cosine_similarity(first_image_vector, second_image_vector).reshape(1, )
     return similarity_score
-
-
-
-
-
-def main(image1, image2):
-    # Load the VGG16 model
-
-
-    # Load the images
-    image1 = load_image(image1)
-    image2 = load_image(image2)
-
-    # Get the embeddings of the images
-    score = get_similarity_score(image1, image2)
-    print(score)
-
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    # define the path of the images
-    sunflower = 'sunflower\\sunflower1.jpg'
-    helianthus = 'sunflower\\sunflower2.jpg'
-    # use the show_image function to plot the images
-    #show_image(sunflower), show_image(helianthus)
-    # compare the two images
-    main(sunflower, helianthus)
 
 
 
