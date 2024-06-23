@@ -11,18 +11,12 @@
 			"extensions": [
                 "ms-python.python",
 				"ms-python.vscode-pylance",
-                "ms-toolsai.jupyter"
+                "ms-toolsai.jupyter",
             ],
 			"settings": {
-				"python.defaultInterpreterPath": "/usr/local/bin/python3",
-                "workbench.colorCustomizations": {
-                    "titleBar.activeBackground": "#19549C",
-                    "titleBar.activeForeground": "#ffffff",
-                    "activityBar.background": "#02A7E3",
-                    "activityBar.foreground": "#ffffff"
-                }
+				"python.defaultInterpreterPath": "/usr/local/bin/python3"
             }
 		}
-	}
+	},
+	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
 }
-
