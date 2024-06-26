@@ -1,5 +1,6 @@
 .DS_Store
 /.idea
-Datasets/*.csv
 *.pyc
 /__pycache__
+Datasets/*.csv
+images/*.jpg
