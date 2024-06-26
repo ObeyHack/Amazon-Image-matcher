@@ -38,7 +38,7 @@ def load_image_bytes(image_bytes):
     return resized_image
 
 
-def get_image_embeddings(object_image: Image):
+def get_image_embeddings(object_image: Image, verbose=0):
     """
       -----------------------------------------------------
       convert image into 3d array and add additional dimension for model input
@@ -47,7 +47,7 @@ def get_image_embeddings(object_image: Image):
     """
 
     image_array = np.expand_dims(object_image, axis=0)
-    image_embedding = vgg16.predict(image_array)
+    image_embedding = vgg16.predict(image_array, verbose=verbose)
     return image_embedding
 
 

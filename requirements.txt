@@ -9,3 +9,4 @@ Keras-Preprocessing
 Keras-Applications
 scikit-learn
 h5py
+tqdm
