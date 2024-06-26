@@ -3,6 +3,7 @@ from PIL import Image
 from tensorflow import keras
 from keras.applications.vgg16 import VGG16
 from sklearn.metrics.pairwise import cosine_similarity
+import io
 
 
 vgg16 = VGG16(weights='imagenet', include_top=False,
@@ -19,6 +20,20 @@ def load_image(image_path):
     """
 
     input_image = Image.open(image_path)
+    resized_image = input_image.resize((224, 224))
+    return resized_image
+
+
+def load_image_bytes(image_bytes):
+    """
+        -----------------------------------------------------
+        Process the image provided.
+        - Resize the image
+        -----------------------------------------------------
+        return resized image
+    """
+
+    input_image = Image.open(io.BytesIO(image_bytes))
     resized_image = input_image.resize((224, 224))
     return resized_image
 
