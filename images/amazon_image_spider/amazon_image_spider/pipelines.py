@@ -7,7 +7,10 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 
+from scrapy.pipelines.images import ImagesPipeline
 
-class AmazonImageSpiderPipeline:
-    def process_item(self, item, spider):
-        return item
+
+class AmazonImageSpiderPipeline(ImagesPipeline):
+    def file_path(self, request, response=None, info=None, *, item=None):
+        image_guid = request.url.split("/")[-1]
+        return f"full/{image_guid}"
