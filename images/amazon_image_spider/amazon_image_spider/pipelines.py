@@ -11,6 +11,5 @@ from scrapy.pipelines.images import ImagesPipeline
 
 
 class AmazonImageSpiderPipeline(ImagesPipeline):
-    def file_path(self, request, response=None, info=None, *, item=None):
-        image_guid = request.url.split("/")[-1]
-        return f"full/{image_guid}"
+    def process_item(self, item, spider):
+        return item
