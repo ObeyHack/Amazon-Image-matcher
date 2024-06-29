@@ -62,6 +62,18 @@ def get_image_embeddings(embedding, verbose=0):
     return image_embedding
 
 
+def get_score(embedding1, embedding2):
+    """
+        -----------------------------------------------------
+        Takes image array and computes its embedding using VGG16 model.
+        -----------------------------------------------------
+        return embedding of the image
+
+    """
+    similarity_score = cosine_similarity(embedding1, embedding2)
+    return similarity_score
+
+
 def get_similarity_score(first_image: str, second_image: str):
     """
         -----------------------------------------------------
@@ -72,9 +84,8 @@ def get_similarity_score(first_image: str, second_image: str):
     """
     first_image_vector = get_image_embeddings(first_image)
     second_image_vector = get_image_embeddings(second_image)
-    similarity_score = cosine_similarity(first_image_vector, second_image_vector).reshape(1, )
+    similarity_score = get_score(first_image_vector, second_image_vector)
     return similarity_score
-
 
 
 def label(embedding):
@@ -89,8 +100,8 @@ def label(embedding):
     return label
 
 
-
 if __name__ == '__main__':
     img = load_image('sunflower/test.jpg')
     img_embedding = get_image_embeddings(img)
+    # score(img_embedding, img_embedding)
     print(img_embedding)

@@ -12,3 +12,4 @@ h5py
 tqdm
 tables
 Scrapy
+progress-executor
