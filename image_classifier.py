@@ -1,5 +1,6 @@
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+from mrjob.protocol import RawValueProtocol
 from keras.src.losses import cosine_similarity
 from mrjob.job import MRJob
 from mrjob.step import MRStep
@@ -8,22 +9,24 @@ import h5py
 
 
 class ImageClassifiers(MRJob):
+    INPUT_PROTOCOL = RawValueProtocol
+
     def __init__(self, input_emb, args=None):
         super().__init__(args)
         self.input_emb = input_emb
 
     def steps(self):
         return [
-            MRStep(mapper=self.mapper_csv_to_embeddings),
+            MRStep(mapper=self.mapper_raw),
             MRStep(mapper=self.mapper_embeddings_to_scores),
             MRStep(reducer=self.reduce_max_score)
         ]
 
-    def mapper_csv_to_embeddings(self, file_name):
-        with h5py.File(f"images/{file_name}.hdf5", 'r') as f:
+    def mapper_raw(self, wet_path, wet_uri):
+        with h5py.File(f"{wet_path}.hdf5", 'r') as f:
             csv_embeddings = f["images"][:]
-            print(file_name)
-            yield file_name, csv_embeddings
+            print(wet_path)
+            yield wet_path, csv_embeddings
 
     def mapper_embeddings_to_scores(self, file_name, embeddings):
         scores = []
