@@ -1,5 +1,7 @@
 import numpy as np
 from PIL import Image
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 from tensorflow import keras
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.preprocessing.image import img_to_array
@@ -101,7 +103,8 @@ def label(embedding):
 
 
 if __name__ == '__main__':
-    img = load_image('sunflower/test.jpg')
+    img = load_image('sunflower/sunflower1.jpg')
     img_embedding = get_image_embeddings(img)
     # score(img_embedding, img_embedding)
-    print(img_embedding)
+    # save the embeddings
+    np.save('sunflower/sunflower1.npy', img_embedding)
