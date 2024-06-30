@@ -13,3 +13,4 @@ tqdm
 tables
 Scrapy
 progress-executor
+mrjob
