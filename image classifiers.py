@@ -1,5 +1,6 @@
 import h5py
 import numpy as np
+from PIL import Image
 from progress_executor.main import executor
 from tqdm.auto import tqdm
 import glob
@@ -29,7 +30,5 @@ def max_csv(input):
     return max(csv_scores, key=csv_scores.get)
 
 
-
 if __name__ == '__main__':
-    img = load_image("sunflower/sunflower1.jpg")
-    print(max_csv(img))
+    img = Image.open('sunflower/test.jpg')
