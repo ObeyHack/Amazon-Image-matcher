@@ -16,28 +16,27 @@ def mapper_file_to_embeddings(file_name):
         return file_name, csv_embeddings
 
 def mapper_embeddings_to_scores(file_name, embeddings, input_emb):
-    scores = []
-    for emb in embeddings:
-        score = cosine_similarity(input_emb, emb)
-        scores.append(score)
+    scores = cosine_similarity(input_emb, embeddings)
     return file_name, scores
 
-def reducer_scores_to_max(file_name, scores):
-    max_score = np.max(scores)
-    argmax_score = np.argmax(scores)
-    return file_name, max_score, argmax_score
+def reducer_scores_to_max(file_name, scores, top_k=5):
+    scores = scores.flatten()
+    max_scores = np.sort(scores)[-top_k:]
+    argmax_scores = np.argsort(scores)[-top_k:]
+    return file_name, max_scores, argmax_scores
 
 
-def mapReduce(file_name, input_emb):
+def mapReduce(file_name, input_emb, top_k=5):
     input_path, csv_embeddings = mapper_file_to_embeddings(file_name)
     file_name, scores = mapper_embeddings_to_scores(input_path, csv_embeddings, input_emb)
-    return reducer_scores_to_max(file_name, scores)
+    return reducer_scores_to_max(file_name, scores, top_k=top_k)
 
-def thread_mapReduce(file_names, input_emb):
+
+def thread_mapReduce(file_names, input_emb, top_k=5):
     futures = []
     with ThreadPoolExecutor(max_workers=32) as executor:
         for file_name in file_names:
-            futures.append(executor.submit(mapReduce, file_name, input_emb))
+            futures.append(executor.submit(mapReduce, file_name, input_emb, top_k=top_k))
 
     futures, _ = concurrent.futures.wait(futures)
     results = [future.result() for future in futures]
@@ -47,6 +46,7 @@ def thread_mapReduce(file_names, input_emb):
 def main():
     emb = np.load("sunflower/sunflower1.npy")
     file_names = [line.strip() for line in open("file_names.txt", "r")]
+    file_names = file_names[:10]
     results = thread_mapReduce(file_names, emb)
     for result in results:
         print(f"File names: {result[0]}, max scores: {result[1]}, argmax scores: {result[2]}")
