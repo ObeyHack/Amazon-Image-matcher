@@ -17,16 +17,16 @@ class ImageClassifiers(MRJob):
 
     def steps(self):
         return [
-            MRStep(mapper=self.mapper_raw),
+            MRStep(mapper=self.mapper_file_to_embeddings),
             MRStep(mapper=self.mapper_embeddings_to_scores),
             MRStep(reducer=self.reduce_max_score)
         ]
 
-    def mapper_raw(self, wet_path, wet_uri):
-        with h5py.File(f"{wet_path}.hdf5", 'r') as f:
+    def mapper_file_to_embeddings(self, file_name):
+        with h5py.File(f"images/{file_name}.hdf5", 'r') as f:
             csv_embeddings = f["images"][:]
-            print(wet_path)
-            yield wet_path, csv_embeddings
+            print(file_name)
+            yield file_name, csv_embeddings
 
     def mapper_embeddings_to_scores(self, file_name, embeddings):
         scores = []
@@ -35,10 +35,10 @@ class ImageClassifiers(MRJob):
             scores.append(score)
         yield file_name, scores
 
-
     def reduce_max_score(self, file_name, scores):
         max_score = np.max(scores)
-        yield file_name, max_score
+        argmax_score = np.argmax(scores)
+        yield file_name, max_score, argmax_score
 
 
 if __name__ == '__main__':
