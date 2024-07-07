@@ -1,4 +1,5 @@
 import os
+
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 from mrjob.protocol import RawValueProtocol
 from keras.src.losses import cosine_similarity
@@ -15,27 +16,26 @@ class ImageClassifiers(MRJob):
         super().__init__(args)
         self.input_emb = input_emb
 
-    def steps(self):
-        return [
-            MRStep(mapper=self.mapper_file_to_embeddings),
-            MRStep(mapper=self.mapper_embeddings_to_scores),
-            MRStep(reducer=self.reduce_max_score)
-        ]
+    def mapper(self, _, input_path):
+        print(input_path)
+        input_path, csv_embeddings = self.mapper_file_to_embeddings(input_path)
+        file_name, scores = self.mapper_embeddings_to_scores(input_path, csv_embeddings)
+        yield file_name, scores
 
     def mapper_file_to_embeddings(self, file_name):
         with h5py.File(f"images/{file_name}.hdf5", 'r') as f:
             csv_embeddings = f["images"][:]
             print(file_name)
-            yield file_name, csv_embeddings
+            return file_name, csv_embeddings
 
     def mapper_embeddings_to_scores(self, file_name, embeddings):
         scores = []
         for emb in embeddings:
             score = cosine_similarity(self.input_emb, emb)
             scores.append(score)
-        yield file_name, scores
+        return file_name, scores
 
-    def reduce_max_score(self, file_name, scores):
+    def reducer(self, file_name, scores):
         max_score = np.max(scores)
         argmax_score = np.argmax(scores)
         yield file_name, max_score, argmax_score
