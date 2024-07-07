@@ -6,7 +6,7 @@ from keras.src.losses import cosine_similarity
 from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
 from tqdm import tqdm
-
+import pandas as pd
 
 def mapper_file_to_embeddings(file_name):
     with h5py.File(f"images/{file_name}.hdf5", 'r') as f:
@@ -20,7 +20,6 @@ def mapper_embeddings_to_scores(file_name, embeddings, input_emb):
     return file_name, scores
 
 def reducer_scores_to_max(file_name, scores, top_k=5):
-    scores = scores.flatten()
     max_scores = np.sort(scores)[-top_k:]
     argmax_scores = np.argsort(scores)[-top_k:]
     return file_name, max_scores, argmax_scores
@@ -40,6 +39,9 @@ def thread_mapReduce(file_names, input_emb, top_k=5):
 
     futures, _ = concurrent.futures.wait(futures)
     results = [future.result() for future in futures]
+
+    df = pd.DataFrame(columns=file_names)
+
     return results
 
 
@@ -48,8 +50,11 @@ def main():
     file_names = [line.strip() for line in open("file_names.txt", "r")]
     file_names = file_names[:10]
     results = thread_mapReduce(file_names, emb)
-    for result in results:
-        print(f"File names: {result[0]}, max scores: {result[1]}, argmax scores: {result[2]}")
+    for csv_result in results:
+        csv_name = csv_result[0][0]
+        print(f"Results for {csv_name}")
+        for result in csv_result:
+            print(result)
 
 
 def save_names():
