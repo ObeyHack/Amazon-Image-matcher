@@ -1,19 +1,55 @@
 import glob
 import os
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-from image_classifier import ImageClassifiers
 import numpy as np
+import h5py
+from keras.src.losses import cosine_similarity
+from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures
+from tqdm import tqdm
+
+
+def mapper_file_to_embeddings(file_name):
+    with h5py.File(f"images/{file_name}.hdf5", 'r') as f:
+        if "images" not in f:
+            return file_name, [0] * 512
+        csv_embeddings = f["images"][:]
+        return file_name, csv_embeddings
+
+def mapper_embeddings_to_scores(file_name, embeddings, input_emb):
+    scores = []
+    for emb in embeddings:
+        score = cosine_similarity(input_emb, emb)
+        scores.append(score)
+    return file_name, scores
+
+def reducer_scores_to_max(file_name, scores):
+    max_score = np.max(scores)
+    argmax_score = np.argmax(scores)
+    return file_name, max_score, argmax_score
+
+
+def mapReduce(file_name, input_emb):
+    input_path, csv_embeddings = mapper_file_to_embeddings(file_name)
+    file_name, scores = mapper_embeddings_to_scores(input_path, csv_embeddings, input_emb)
+    return reducer_scores_to_max(file_name, scores)
+
+def thread_mapReduce(file_names, input_emb):
+    futures = []
+    with ThreadPoolExecutor(max_workers=32) as executor:
+        for file_name in file_names:
+            futures.append(executor.submit(mapReduce, file_name, input_emb))
+
+    futures, _ = concurrent.futures.wait(futures)
+    results = [future.result() for future in futures]
+    return results
 
 
 def main():
     emb = np.load("sunflower/sunflower1.npy")
-    mr_job = ImageClassifiers(emb, args=['-r', 'local', "images/file_names.txt"])
-
-    mr_job.run_mapper(step_num=1)
-
-
-    # with mr_job.make_runner() as runner:
-    #     runner.run()
+    file_names = [line.strip() for line in open("file_names.txt", "r")]
+    results = thread_mapReduce(file_names, emb)
+    for result in results:
+        print(f"File names: {result[0]}, max scores: {result[1]}, argmax scores: {result[2]}")
 
 
 def save_names():
@@ -23,10 +59,11 @@ def save_names():
     file_names = [os.path.basename(file_name).replace(".hdf5", "") for file_name in file_names]
 
     # save the file names to a text file
-    with open(path+"/file_names.txt", "w") as f:
+    with open("file_names.txt", "w") as f:
         for file_name in file_names:
             f.write(file_name + "\n")
 
 
 if __name__ == '__main__':
+    # save_names()
     main()
