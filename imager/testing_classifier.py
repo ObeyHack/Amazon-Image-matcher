@@ -39,9 +39,6 @@ def thread_mapReduce(file_names, input_emb, top_k=5):
 
     futures, _ = concurrent.futures.wait(futures)
     results = [future.result() for future in futures]
-
-    df = pd.DataFrame(columns=file_names)
-
     return results
 
 
