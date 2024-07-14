@@ -16,3 +16,4 @@ progress-executor
 mrjob
 transformers
 torch
+beautifulsoup4
