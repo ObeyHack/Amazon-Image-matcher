@@ -90,6 +90,21 @@ def get_similarity_score(first_image: str, second_image: str):
     return similarity_score
 
 
+def image2label(image):
+    """
+        -----------------------------------------------------
+        Takes image array and computes its embedding using VGG16 model.
+        -----------------------------------------------------
+        return embedding of the image
+
+    """
+    image = img_to_array(image)
+    image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+    image_embedding = vgg16.predict(image)
+    label = decode_predictions(image_embedding)
+    return label
+
+
 def label(embedding):
     """
         -----------------------------------------------------
