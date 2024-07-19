@@ -12,13 +12,23 @@ from tqdm.auto import tqdm
 from transformers import BertModel, BertTokenizer
 from sklearn.metrics.pairwise import cosine_similarity
 import os
-
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 model = BertModel.from_pretrained('bert-base-uncased')
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 
 def text_embedding(text):
+    stopword = set(stopwords.words('english'))
+    symbols = ['.', ',', '!', '?', ';', ':', '(', ')', '[', ']', '{', '}', '<', '>', '/', '\\', '|', '@', '#', '$', '%',
+               '^', '&', '*', '-', '+', '=', '_', '~', '`', '\'', '\"', '“', '”', '’', '‘']
+    word_tokens = word_tokenize(text)
+    text = [word for word in word_tokens if word not in stopword]
+    text = [word for word in text if word not in symbols]
+    text = ' '.join(text)
     # Tokenize the input text
     input_ids = tokenizer.encode(text, return_tensors='pt')
 
@@ -28,11 +38,16 @@ def text_embedding(text):
 
     # Extract the embeddings from the model output
     embeddings = model_output.last_hidden_state
-
+    num_tokens = embeddings.shape[1]
+    weights = torch.linspace(1, 0, steps=num_tokens).unsqueeze(0).unsqueeze(-1)
+    weights = weights.to(embeddings.device)
+    #to weight^2
+    weights = weights ** 32
+    weighted_embeddings = embeddings * weights
     # Calculate the average of the embeddings for each token
+    weighted_avg_embeddings = torch.sum(weighted_embeddings, dim=1) / torch.sum(weights)
     avg_embeddings = torch.mean(embeddings, dim=1)
-
-    return avg_embeddings
+    return weighted_avg_embeddings
 
 
 def jaccard_similarity(doc1, doc2):
