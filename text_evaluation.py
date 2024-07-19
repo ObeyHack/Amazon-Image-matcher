@@ -1,13 +1,18 @@
 import glob
+import random
+import time
 import zipfile
 from urllib.request import urlopen, build_opener
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 import torch
+from faker import Faker
 from tqdm.auto import tqdm
 from transformers import BertModel, BertTokenizer
 from sklearn.metrics.pairwise import cosine_similarity
 import os
+
 
 model = BertModel.from_pretrained('bert-base-uncased')
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -44,15 +49,42 @@ def jaccard_similarity(doc1, doc2):
     return similarity
 
 
+def get_soup_retry(url, verbose=False):
+    fake = Faker()
+    uag_random = fake.user_agent()
+
+    header = {
+        'User-Agent': uag_random,
+        'Accept-Language': 'en-US,en;q=0.9'
+    }
+    isCaptcha = True
+    while isCaptcha:
+        page = requests.get(url, headers=header)
+        assert page.status_code == 200
+        soup = BeautifulSoup(page.content, 'lxml')
+        if 'captcha' in str(soup):
+            uag_random = fake.user_agent()
+            if verbose:
+                print(f'\rBot has been detected... retrying ... use new identity: {uag_random} ', end='', flush=True)
+            continue
+        else:
+            if verbose:
+                print('Bot bypassed')
+            return soup
+
+
 def description_scraper(url):
-    opener = build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 
-    response = opener.open(url)
-    html = response.read()
-
-    # Parse the HTML content using BeautifulSoup
-    soup = BeautifulSoup(html, 'html.parser')
+    # opener = build_opener()
+    # opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    # time.sleep(0.5 * random.random())
+    #
+    # response = opener.open(url)
+    # html = response.read()
+    #
+    # # Parse the HTML content using BeautifulSoup
+    # soup = BeautifulSoup(html, 'html.parser')
+    soup = get_soup_retry(url)
 
     # Find the element with id="productDescription"
     description_div = soup.find(id='productDescription')
@@ -65,6 +97,7 @@ def description_scraper(url):
         description_text = ""
 
     # Find the title of the product
+    print(url)
     title = soup.select_one('#productTitle').text
 
     return title+description_text
