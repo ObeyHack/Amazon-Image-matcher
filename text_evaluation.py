@@ -24,7 +24,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 def text_embedding(text):
     stopword = set(stopwords.words('english'))
     symbols = ['.', ',', '!', '?', ';', ':', '(', ')', '[', ']', '{', '}', '<', '>', '/', '\\', '|', '@', '#', '$', '%',
-               '^', '&', '*', '-', '+', '=', '_', '~', '`', '\'', '\"', '“', '”', '’', '‘']
+               '^', '&', '*', '-', '+', '=', '_', '~', '`', '\'', '\"', '“', '”', '’', '‘', '\n', '\t', '–', '—', '•',]
     word_tokens = word_tokenize(text)
     text = [word for word in word_tokens if word not in stopword]
     text = [word for word in text if word not in symbols]
@@ -89,32 +89,17 @@ def get_soup_retry(url, verbose=False):
 
 
 def description_scraper(url):
-
-    # opener = build_opener()
-    # opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    # time.sleep(0.5 * random.random())
-    #
-    # response = opener.open(url)
-    # html = response.read()
-    #
-    # # Parse the HTML content using BeautifulSoup
-    # soup = BeautifulSoup(html, 'html.parser')
     soup = get_soup_retry(url)
 
     # Find the element with id="productDescription"
     description_div = soup.find(id='productDescription')
+    description_div2 = soup.find(id='productDescription_fullView')
 
-    if description_div:
-        # Extract the text within the <p><span> tags
-        description_text = description_div.find('p').find('span').get_text()
-    else:
-        print("Description not found")
-        description_text = ""
+    description_text1 = description_div.text if description_div else ""
+    description_text2 = description_div2.text if description_div2 else ""
+    description_text = description_text1 + description_text2
 
-    # Find the title of the product
-    print(url)
-    title = soup.select_one('#productTitle').text
-
+    title = soup.find(id='title').text
     return title+description_text
 
 
