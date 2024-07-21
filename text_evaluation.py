@@ -11,7 +11,7 @@ from transformers import AutoTokenizer, AutoModel
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 nltk.download('stopwords')
-
+nltk.download('punkt')
 
 tokenizer = AutoTokenizer.from_pretrained('distilbert/distilbert-base-uncased')
 model = AutoModel.from_pretrained("distilbert/distilbert-base-uncased", torch_dtype=torch.float16)
