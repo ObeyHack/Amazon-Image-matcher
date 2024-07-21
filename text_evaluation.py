@@ -36,7 +36,6 @@ def text_embedding(text):
         if torch.backends.mps.is_available()
         else "cpu"
     )
-
     # Encode the input text
     def mean_pooling(model_output, attention_mask):
         token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
