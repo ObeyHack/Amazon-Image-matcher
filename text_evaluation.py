@@ -21,7 +21,8 @@ model = BertModel.from_pretrained('bert-base-uncased')
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 
-def text_embedding(text):
+
+def tokenize(text):
     stopword = set(stopwords.words('english'))
     symbols = ['.', ',', '!', '?', ';', ':', '(', ')', '[', ']', '{', '}', '<', '>', '/', '\\', '|', '@', '#', '$', '%',
                '^', '&', '*', '-', '+', '=', '_', '~', '`', '\'', '\"', '“', '”', '’', '‘', '\n', '\t', '–', '—', '•',]
@@ -29,7 +30,11 @@ def text_embedding(text):
     text = [word for word in word_tokens if word not in stopword]
     text = [word for word in text if word not in symbols]
     text = ' '.join(text)
-    # Tokenize the input text
+    return text
+
+
+def text_embedding(text):
+    # Encode the input text
     input_ids = tokenizer.encode(text, return_tensors='pt')
 
     # Get the BERT model embeddings
@@ -100,7 +105,7 @@ def description_scraper(url):
     description_text = description_text1 + description_text2
 
     title = soup.find(id='title').text
-    return title+description_text
+    return tokenize(title+description_text)
 
 
 def similarity_score(url1, url2):

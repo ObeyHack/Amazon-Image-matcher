@@ -2,12 +2,16 @@ import glob
 import os
 import numpy as np
 import h5py
+import requests
 from keras.src.losses import cosine_similarity
 from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
 from tqdm import tqdm
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity as cosine_similarity_sklearn
+
+from imager.vgg.VGG import load_image_bytes, get_image_embeddings
+
 
 def mapper_file_to_embeddings(file_name):
     with h5py.File(f"images/{file_name}.hdf5", 'r') as f:
@@ -108,6 +112,23 @@ def get_cosine_similarities(query_embedding, all_embeddings, k=0):
         top_k_indices = np.argsort(-similarities)[:k]
         return similarities, top_k_indices
     return similarities
+
+
+def download_image(url):
+    response = requests.get(url)
+    if response.status_code != 200:
+        return None
+    img_data = response.content
+    return img_data
+
+
+def embed_image_from_url(url):
+    img_data = download_image(url)
+    if img_data is None:
+        return np.zeros((1, 512))
+    img = load_image_bytes(img_data)
+    embedding = get_image_embeddings(img)
+    return embedding
 
 
 def main():

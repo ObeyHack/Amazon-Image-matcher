@@ -19,3 +19,4 @@ torch
 beautifulsoup4
 Faker
 nltk
+seaborn
