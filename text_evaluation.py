@@ -13,8 +13,15 @@ from nltk.tokenize import word_tokenize
 nltk.download('stopwords')
 nltk.download('punkt')
 
+device = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
+)
 tokenizer = AutoTokenizer.from_pretrained('distilbert/distilbert-base-uncased')
-model = AutoModel.from_pretrained("distilbert/distilbert-base-uncased", torch_dtype=torch.float16)
+model = AutoModel.from_pretrained("distilbert/distilbert-base-uncased", torch_dtype=torch.float16).to(device)
 
 
 def tokenize(text):
@@ -29,13 +36,6 @@ def tokenize(text):
 
 
 def text_embedding(text):
-    device = (
-        "cuda"
-        if torch.cuda.is_available()
-        else "mps"
-        if torch.backends.mps.is_available()
-        else "cpu"
-    )
     # Encode the input text
     def mean_pooling(model_output, attention_mask):
         token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
@@ -43,7 +43,7 @@ def text_embedding(text):
         return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
     # Tokenize sentences
-    encoded_input = tokenizer(text, padding=True, truncation=True, return_tensors='pt')
+    encoded_input = tokenizer(text, padding=True, truncation=True, return_tensors='pt').to(device)
 
     # Compute token embeddings
     with torch.no_grad():
@@ -51,7 +51,7 @@ def text_embedding(text):
 
     # Perform pooling. In this case, max pooling.
     sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
-    return sentence_embeddings
+    return sentence_embeddings.cpu()
 
 
 def jaccard_similarity(doc1, doc2):
