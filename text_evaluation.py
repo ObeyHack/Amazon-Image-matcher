@@ -1,25 +1,20 @@
-import glob
-import random
-import time
 import zipfile
-from urllib.request import urlopen, build_opener
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import torch
 from faker import Faker
 from tqdm.auto import tqdm
-from transformers import BertModel, BertTokenizer
 from sklearn.metrics.pairwise import cosine_similarity
-import os
 import nltk
-nltk.download('stopwords')
+from transformers import AutoTokenizer, AutoModel
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+nltk.download('stopwords')
 
-model = BertModel.from_pretrained('bert-base-uncased')
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
+tokenizer = AutoTokenizer.from_pretrained('distilbert/distilbert-base-uncased')
+model = AutoModel.from_pretrained("distilbert/distilbert-base-uncased", torch_dtype=torch.float16)
 
 
 def tokenize(text):
@@ -34,26 +29,29 @@ def tokenize(text):
 
 
 def text_embedding(text):
+    device = (
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
+    )
     # Encode the input text
-    input_ids = tokenizer.encode(text, return_tensors='pt')
+    def mean_pooling(model_output, attention_mask):
+        token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
-    # Get the BERT model embeddings
+    # Tokenize sentences
+    encoded_input = tokenizer(text, padding=True, truncation=True, return_tensors='pt')
+
+    # Compute token embeddings
     with torch.no_grad():
-        model_output = model(input_ids)
+        model_output = model(**encoded_input)
 
-    # Extract the embeddings from the model output
-    embeddings = model_output.last_hidden_state
-    num_tokens = embeddings.shape[1]
-    weights = torch.linspace(1, 0, steps=num_tokens).unsqueeze(0).unsqueeze(-1)
-    weights = weights.to(embeddings.device)
-
-    #to weight^2
-    weights = weights ** 32
-    weighted_embeddings = embeddings * weights
-    # Calculate the average of the embeddings for each token
-    weighted_avg_embeddings = torch.sum(weighted_embeddings, dim=1) / torch.sum(weights)
-    avg_embeddings = torch.mean(embeddings, dim=1)
-    return weighted_avg_embeddings
+    # Perform pooling. In this case, max pooling.
+    sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
+    return sentence_embeddings
 
 
 def jaccard_similarity(doc1, doc2):

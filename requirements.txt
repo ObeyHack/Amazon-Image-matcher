@@ -15,8 +15,13 @@ Scrapy
 progress-executor
 mrjob
 transformers
-torch
 beautifulsoup4
 Faker
 nltk
 seaborn
+sentence-transformers
+tensorflow
+--index-url https://download.pytorch.org/whl/cu121
+torch
+torchvision
+torchaudio
