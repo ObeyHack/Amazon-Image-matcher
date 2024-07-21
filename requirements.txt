@@ -18,4 +18,4 @@ transformers
 torch
 beautifulsoup4
 Faker
-ntlk
+nltk
