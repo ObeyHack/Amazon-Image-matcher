@@ -46,6 +46,7 @@ def text_embedding(text):
     num_tokens = embeddings.shape[1]
     weights = torch.linspace(1, 0, steps=num_tokens).unsqueeze(0).unsqueeze(-1)
     weights = weights.to(embeddings.device)
+
     #to weight^2
     weights = weights ** 32
     weighted_embeddings = embeddings * weights
