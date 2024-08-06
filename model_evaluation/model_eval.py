@@ -15,14 +15,13 @@ import imager.vgg.VGG
 import numpy as np
 import matplotlib.pyplot as plt
 
-def evaluate_model(test_data, model):
-    #test_data is a list of (image,text) pairs (MAYBE WE (image,url) pairs)
 
+def evaluate_model(test_data, model):
+    # test_data is a list of (image,text) pairs (MAYBE WE (image,url) pairs)
     accuracy = 0
     "WRITE THE CODE HERE"
 
-    
-
     return accuracy
+
 
 
