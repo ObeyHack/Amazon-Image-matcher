@@ -21,7 +21,8 @@ nltk
 seaborn
 sentence-transformers
 tensorflow
---index-url https://download.pytorch.org/whl/cu121
+reflex
+--extra-index-url https://download.pytorch.org/whl/cu121
 torch
 torchvision
 torchaudio
