@@ -4,3 +4,11 @@
 /__pycache__
 Datasets/*.csv
 images/*.jpg
+
+
+
+/model_evaluation/app/*.db
+/model_evaluation/app/*.py[cod]
+/model_evaluation/app/.web
+/model_evaluation/app/__pycache__/
+/model_evaluation/app/assets/external/

@@ -110,9 +110,13 @@ def description_scraper(url):
 def similarity_score(url1, url2):
     text1 = text_embedding(description_scraper(url1))
     text2 = text_embedding(description_scraper(url2))
-    similarity = cosine_similarity(text1, text2)
+    similarity = text_score(text1, text2)
     return similarity
 
+
+def text_score(text1, text2):
+    similarity = cosine_similarity(text1, text2)
+    return similarity
 
 def similar_links(text, urls):
     similarities = []
