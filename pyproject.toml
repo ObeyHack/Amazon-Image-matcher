@@ -1,0 +1,32 @@
+
+[project]
+name = "imager"
+version = "0.1.0"
+description = "A package for links to amazon product based on image"
+authors =  [
+  {name = "Sean Cherny"},
+  {name = "Yonatan Kratter"},
+  {name = "Michael Merzin"},
+]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">= 3.9"
+dependencies = [
+#  "numpy",
+#  "tqdm",
+#  "keyboard",
+#  "python-dotenv",
+#  "seaborn",
+#  "matplotlib",
+#  "neptune",
+#  "gym-woodoku@git+https://github.com/helpingstar/gym-woodoku.git",
+#  "opencv-python",
+]
+
+#[project.scripts]
+#woodoku-cli = "woodokuMind.woodoku:main"
+
+
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.2,<4"]
