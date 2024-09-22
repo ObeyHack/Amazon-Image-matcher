@@ -49,7 +49,7 @@ def thread_mapReduce(file_names, input_emb, top_k=5):
     return results
 
 
-def get_embedding_links(return_dict=False, hdf5_folder_path="images", csv_folder_path=os.getcwd()+"/Datasets"):
+def get_embedding_links(return_dict=False, hdf5_folder_path="images", csv_folder_path=os.getcwd()+r"\Datasets"):
     # Initialize an empty list to store embeddings and image links
     all_embeddings = []
     image_links = []
