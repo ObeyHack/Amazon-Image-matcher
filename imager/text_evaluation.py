@@ -129,10 +129,10 @@ def similar_links(text, urls):
 
 
 def get_urls():
-    with zipfile.ZipFile("../Datasets/archive.zip", 'r') as zip_ref:
+    with zipfile.ZipFile("Datasets/archive.zip", 'r') as zip_ref:
         zip_ref.extractall("Datasets")
 
-    df = pd.read_csv("../Datasets/Amazon-Products.csv")
+    df = pd.read_csv("Datasets/Amazon-Products.csv")
     urls = df['link']
     return urls
 

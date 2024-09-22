@@ -44,8 +44,6 @@ def main():
     #make float from string
     price = price.str.replace('₹','').str.replace(',','').astype(float)
     price = price.fillna(0)
-    #change to int from float
-    price = price.astype(int)
 
     # plot scatter plot of clusters
     plt.scatter(rating, price, c=predictions)
