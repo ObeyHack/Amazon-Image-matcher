@@ -49,10 +49,12 @@ def thread_mapReduce(file_names, input_emb, top_k=5):
     return results
 
 
-def get_embedding_links(return_dict=False, hdf5_folder_path="images", csv_folder_path=os.getcwd()+r"\Datasets"):
+def get_embedding_links(return_dict=False, hdf5_folder_path="images", csv_folder_path=os.getcwd() + r"\Datasets",
+                        return_subjects=False):
     # Initialize an empty list to store embeddings and image links
     all_embeddings = []
     image_links = []
+    all_subjects = []
 
     def _list_datasets(file_path):
         """List all dataset names in an HDF5 file."""
@@ -78,14 +80,18 @@ def get_embedding_links(return_dict=False, hdf5_folder_path="images", csv_folder
                         actual_embedding_size = embeddings.shape[-1]
                         for i, embedding in enumerate(embeddings):
                             all_embeddings.append(embedding)
+                            # append the "subject" column value to the all_subjects list
+                            all_subjects.append(df['main_category'].iloc[i])
                             image_links.append(df['image'].iloc[i])
                     else:
                         all_embeddings.append(np.zeros(actual_embedding_size))  # Handle empty embeddings case
+                        all_subjects.append("Empty category")  # Handle empty embeddings case
                         image_links.append(None)  # Handle empty embeddings case
 
     # Convert lists to NumPy arrays
     all_embeddings = np.array(all_embeddings)
     image_links = np.array(image_links)
+    all_subjects = np.array(all_subjects)
 
     # Ensure the embeddings array is 2-dimensional
     all_embeddings = all_embeddings.reshape(all_embeddings.shape[0], -1)
@@ -96,6 +102,9 @@ def get_embedding_links(return_dict=False, hdf5_folder_path="images", csv_folder
         for i in range(len(all_embeddings)):
             embedding_links_dict[tuple(all_embeddings[i])] = image_links[i]
         return embedding_links_dict
+
+    if return_subjects:
+        return all_embeddings, all_subjects
 
     return all_embeddings, image_links
 
