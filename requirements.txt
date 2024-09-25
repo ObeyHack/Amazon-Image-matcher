@@ -24,6 +24,7 @@ tensorflow
 reflex
 streamlit
 scipy
+swifter
 --extra-index-url https://download.pytorch.org/whl/cu121
 torch
 torchvision
