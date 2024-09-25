@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-SAVE_PATH = "imager/uploads/"
+SAVE_PATH = "uploads/"
 
 
 def init_model():
