@@ -141,7 +141,7 @@ def embed_image_from_url(url):
 
 
 def main():
-    emb = np.load("sunflower/sunflower1.npy")
+    emb = np.load("modeler/sunflower/sunflower1.npy")
     file_names = [line.strip() for line in open("file_names.txt", "r")]
     file_names = file_names[:10]
     results = thread_mapReduce(file_names, emb)
