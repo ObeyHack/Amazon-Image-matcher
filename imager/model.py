@@ -12,11 +12,11 @@ from imager.vgg.VGG import get_image_embeddings, load_image_bytes
 
 class AmazonModel:
     def __init__(self, root_path=os.getcwd(),k=5):
-        all_embeddings, image_links = get_embedding_links(hdf5_folder_path=root_path + "/images/")
+        all_embeddings, image_links = get_embedding_links(hdf5_folder_path=root_path + "/imager/images/")
         self.k = k
         self.embeddings = all_embeddings
         self.root_path = root_path
-        self.data = pd.read_csv(root_path + "/Datasets/Amazon-Products.csv")
+        self.data = pd.read_csv(root_path + "/imager/Datasets/Amazon-Products.csv")
 
     def predict(self, x):
         """

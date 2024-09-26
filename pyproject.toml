@@ -23,8 +23,8 @@ dependencies = [
 #  "opencv-python",
 ]
 
-#[project.scripts]
-#woodoku-cli = "woodokuMind.woodoku:main"
+[project.scripts]
+app = "imager.main:main"
 
 
 [build-system]
