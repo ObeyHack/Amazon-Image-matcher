@@ -55,20 +55,21 @@ def plot_3D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca):
 
 
 def find_best_k_clusters(link_embeddings):
-    # plot the graph
-    k_values = range(2, 21)
+    # plot the graph as scatter plot of k vs inertia
+    k_values = range(2, 139)
     inertias = []
-    for k in k_values:
+    for k in tqdm.tqdm(k_values):
         kmeans = KMeans(n_clusters=k)
         kmeans.fit(link_embeddings)
         inertias.append(kmeans.inertia_)
     fig, ax = plt.subplots()
     ax.plot(k_values, inertias)
     ax.set_xlabel('k')
-    ax.set_ylabel('inertia')
-    ax.set_title('k vs inertia')
+    ax.set_ylabel('Inertia')
+    ax.set_title('Inertia vs k')
+    plt.tight_layout()
     plt.show()
-    fig.savefig(r'plots\k_vs_inertia.png')
+    fig.savefig(r'plots\Inertia_vs_k.png')
 
     # return best k
     return inertias.index(min(inertias)) + 2
@@ -100,18 +101,18 @@ def main():
     pca = PCA(n_components=3)
     embs_pca = pca.fit_transform(link_embeddings)
 
-    # 2D PCA part
-    plot_2D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
-
-    # 3D PCA part
-    plot_3D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
+    # # 2D PCA part
+    # plot_2D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
+    # 
+    # # 3D PCA part
+    # plot_3D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
 
     # Clusters part (Not working well)
-    # # find the best k clusters
-    # k = find_best_k_clusters(link_embeddings)
-    # 
-    # # plot the best k clusters.
-    # plot_clusters(link_embeddings, k, embs_pca)
+    # find the best k clusters
+    k = find_best_k_clusters(link_embeddings)
+
+    # plot the best k clusters.
+    plot_clusters(link_embeddings, k, embs_pca)
 
 
 if __name__ == '__main__':
