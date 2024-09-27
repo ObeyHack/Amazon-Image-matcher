@@ -39,6 +39,12 @@ class AmazonModel:
                 continue
             valid_links.append(link)
 
+
+        # remove ref= from the links
+        valid_links = [link.split(r"/ref=")[0] for link in valid_links]
+
+        # remove duplicates
+        valid_links = list(set(valid_links))
         return valid_links
 
     def eval(self, X, Y):
