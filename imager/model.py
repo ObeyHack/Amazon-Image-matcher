@@ -8,10 +8,8 @@ from imager.image_classifier import get_embedding_links, get_cosine_similarities
 from imager.vgg.VGG import get_image_embeddings, load_image_bytes
 
 
-
-
 class AmazonModel:
-    def __init__(self, root_path=os.getcwd(),k=5):
+    def __init__(self, root_path=os.getcwd(), k=5):
         all_embeddings, image_links = get_embedding_links(hdf5_folder_path=root_path + "/imager/images/")
         self.k = k
         self.embeddings = all_embeddings
@@ -35,10 +33,9 @@ class AmazonModel:
             try:
                 text_evaluation.get_soup_retry(link)
 
-            except AssertionError:
+            except:
                 continue
             valid_links.append(link)
-
 
         # remove ref= from the links
         valid_links = [link.split(r"/ref=")[0] for link in valid_links]
@@ -54,6 +51,7 @@ class AmazonModel:
         :param Y: batch of links to the text descriptions
         :return: average evaluation score
         """
+
         def un_batched_eval(self, x, y):
             """
             :param x: an image
@@ -73,5 +71,3 @@ class AmazonModel:
 
         scores = [un_batched_eval(self, X[i], Y[i]) for i in tqdm(range(len(X)))]
         return scores
-
-

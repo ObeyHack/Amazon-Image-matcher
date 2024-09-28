@@ -79,7 +79,10 @@ def get_soup_retry(url, verbose=False):
     isCaptcha = True
     while isCaptcha:
         page = requests.get(url, headers=header)
-        assert page.status_code == 200
+        if page.status_code != 200:
+            print(f'Failed to connect to {url}')
+            assert page.status_code == 200
+
         soup = BeautifulSoup(page.content, 'lxml')
         if 'captcha' in str(soup):
             uag_random = fake.user_agent()
