@@ -8,6 +8,15 @@ import tqdm
 
 
 def plot_2D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca):
+    """
+    Plot the link embeddings according to their corresponding subjects, using 2D PCA and legend.
+    :param link_embeddings: the embeddings of the links
+    :param subjects: the subjects of the links
+    :param unique_subjects: the unique subjects of the links
+    :param colors: the colors of the subjects
+    :param embs_pca: the PCA of the embeddings
+    :return: None
+    """
     # plot the link embeddings according to their corresponding subjects, using 2D PCA and legend
     fig, ax = plt.subplots()
 
@@ -28,6 +37,15 @@ def plot_2D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca):
 
 
 def plot_3D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca):
+    """
+    Plot the link embeddings according to their corresponding subjects, using 3D PCA and legend - and save 8 images
+    :param link_embeddings: the embeddings of the links
+    :param subjects: the subjects of the links
+    :param unique_subjects: the unique subjects of the links
+    :param colors: the colors of the subjects
+    :param embs_pca: the PCA of the embeddings
+    :return: None
+    """
     # plot the link embeddings according to their corresponding subjects, using 3D PCA and legend - and save 8 images
     # where each image is a different angle of the 3D plot (0, 45, 90, 135, 180, 225, 270, 315 degrees)
     for angle in range(0, 360, 45):
@@ -55,6 +73,11 @@ def plot_3D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca):
 
 
 def find_best_k_clusters(link_embeddings):
+    """
+    Find the best k clusters for the link embeddings, by plotting the graph as scatter plot of k vs inertia
+    :param link_embeddings: the embeddings of the links
+    :return: the best k clusters
+    """
     # plot the graph as scatter plot of k vs inertia
     k_values = range(2, 139)
     inertias = []
@@ -76,6 +99,13 @@ def find_best_k_clusters(link_embeddings):
 
 
 def plot_clusters(link_embeddings, k, embs_pca):
+    """
+    Plot the best k clusters of the link embeddings
+    :param link_embeddings: the embeddings of the links
+    :param k: the best k clusters
+    :param embs_pca: the PCA of the embeddings
+    :return: None
+    """
     kmeans = KMeans(n_clusters=k)
     kmeans.fit(link_embeddings)
     fig, ax = plt.subplots()
@@ -101,11 +131,11 @@ def main():
     pca = PCA(n_components=3)
     embs_pca = pca.fit_transform(link_embeddings)
 
-    # # 2D PCA part
-    # plot_2D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
-    # 
-    # # 3D PCA part
-    # plot_3D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
+    # 2D PCA part
+    plot_2D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
+
+    # 3D PCA part
+    plot_3D_PCA(link_embeddings, subjects, unique_subjects, colors, embs_pca)
 
     # Clusters part (Not working well)
     # find the best k clusters
